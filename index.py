@@ -1,4 +1,3 @@
-from xml.dom.minidom import Element
 from selenium.webdriver.firefox.service import Service
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -9,7 +8,7 @@ option = Options()
 option.headless=False
 service = Service(executable_path="/home/w3e103/web_drivers/geckodriver")
 driver = webdriver.Firefox(service=service,options=option)
-
+driver.fullscreen_window()
 
 # #strip number from string
 # def stripNumber(label:str):
@@ -25,8 +24,12 @@ def getDestinationLink(destination:str):
     return anchor.get_attribute(name='href')
 
 
-def getHotelNameAndLink(url):
-    driver.get(url)
+def getHotelNameAndLink(url:str):
+    try:
+        driver.get(url)
+    except:
+        print('error while loading page')
+        return None 
     anchor=driver.find_element(by=By.CLASS_NAME,value='soom-name')
     hotelName = anchor.find_element(by=By.CSS_SELECTOR,value='span').text
     return (anchor.get_attribute(name='href'),hotelName)
@@ -38,28 +41,57 @@ def getAHotel(url):
         try:
             if 'view all photos'.lower() == btn.find_element(by=By.CSS_SELECTOR,value='.Iqt3-button-content').text.lower():
                 btn.click()
+                labelButtons = driver.find_element(by=By.CLASS_NAME,value='DTct-categories-container').find_elements(by=By.TAG_NAME, value='button')
+                buttonWithLabel = [(button.find_element(by=By.CSS_SELECTOR, value='div div div').text.rstrip(string.digits), button) for button in labelButtons]
+                return buttonWithLabel[1:]
         except:
-            pass
-    labelButtons = driver.find_element(by=By.CLASS_NAME,value='DTct-categories-container').find_elements(by=By.TAG_NAME, value='button')
-    buttonWithLabel = [(button.find_element(by=By.CSS_SELECTOR, value='div div div').text.rstrip(string.digits), button) for button in labelButtons]
-    # for button in labelButtons:
-    return buttonWithLabel[1:]
+            print('View all button not found')
         
-def getImageWithLabel(buttonWithLabel):
+    # for button in labelButtons:
+ # take tuple list of button and label and return a dictionary containing label and corresponding image list
+ # dict={
+ # 'label1': [img1,img2],
+ # 'label-2': [img1,img2,img3]  
+ # }      
+def getImageWithLabel(buttonWithLabel:list)-> dict:
     obj={}
     for button in buttonWithLabel:
-        time.sleep(5)
+        # time.sleep(2)
         print(button[0])
-        button[1].click()
-        for image in driver.find_elements(by=By.CSS_SELECTOR, value=f'img[alt={button[0]}]'):
-            # print(image.get_attribute('src'))
-            obj[button[0]]
+        label = button[0].split(' ')[0]
+        try:
+            button[1].click()
+        except:
+            print('button is not clickable')
+            print(button[1])
+            continue
+        images = driver.find_elements(by=By.CSS_SELECTOR, value='.ZVFD-dots-container img')
+        if len(images)>1:
+            for image in images:
+                link = image.get_attribute('src')
+                print(link)
+                if link != None:
+                    try:
+                        obj[button[0]]+= [link]
+                    except KeyError:
+                        obj[button[0]] = [link]
+                
+        else:
+            image = driver.find_element(by=By.CSS_SELECTOR, value=f'img[alt*={label}]').get_attribute('src')
+            print(image)
+            obj[button[0]] = [image]
+    return obj
+
+
+#program start executing from here
 def main():
     hotelName = ''
-    dest=getDestinationLink('hyderabad')
+    dest=getDestinationLink('kolkata')
     hotel=getHotelNameAndLink(dest)
     hotelName=hotel[1]
     hotelUrl=hotel[0]
-    getImageWithLabel(getAHotel(hotelUrl))
+    image=getImageWithLabel(getAHotel(hotelUrl))
+    
+    print(image)
     
 main()
