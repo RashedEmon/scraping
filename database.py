@@ -2,8 +2,6 @@ from peewee import *
 
 db = MySQLDatabase('scraping', user='Rashedul', password='R@shedu1',
                    host='localhost', port=3306)
-# db.connect()
-# print(db)
 
 
 class BaseModel(Model):
@@ -25,4 +23,6 @@ class Images(BaseModel):
     hotel = ForeignKeyField(Hotel)
     image = CharField(max_length=200, unique=True)
     label = ForeignKeyField(Label)
+
+
 
