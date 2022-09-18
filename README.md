@@ -17,8 +17,8 @@ Change directory to project root folder <br>
 <code>cd scraping</code><br>
 Install all the depedency of the project<br>
 <code>pip install -r requirements.txt</code><br>
-Download and install mysql server and configure by using following values(you can customize accroding to your. But You have to change the value in database module)<br>
-username: mysql password: mysql database name: mysql host: localhost port: 3306<br> 
+Download and install mysql server and configure by using following values(you can customize the values. But You have to change the value in database module)<br>
+username: mysql<br>password: mysql<br>database name: mysql<br>host: localhost<br>port: 3306<br>
 Run the script by following command<br>
 <code>python3 index.py</code>
 
