@@ -1,6 +1,6 @@
 # Web Scraping Script
 
-This script will extract information from web and save into databases.<br>
+This script will extract information from https://www.kayak.co.in/ and save into databases.<br>
 
 #Teachnology Used in This Project:
 1. Python <br>
@@ -21,4 +21,10 @@ Download and install mysql server and configure by using following values(you ca
 username: mysql<br>password: mysql<br>database name: mysql<br>host: localhost<br>port: 3306<br>
 Run the script by following command<br>
 <code>python3 index.py</code>
+
+#Database Schema<br>
+Hotel(id,name)<br>
+Images(id,hotel_id,image,label_id)<br>
+Label(id,name)<br>
+
 
