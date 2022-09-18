@@ -10,7 +10,7 @@ This script will extract information from web and save into databases.<br>
 5. cryptography <br>
 6. pymysql <br>
 
-#How to install this project:
+#How to install this project:<br>
 First create virtual environment and then clone the repository using following command. <br>
 <code> git clone https://github.com/RashedEmon/scraping.git</code>  <br>
 Change directory to project root folder <br>
