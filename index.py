@@ -8,16 +8,18 @@ import string
 # import from local module
 from database import db, Label, Images, Hotel
 
-
+#start browser and load home page
 def startBrowser():
     option = Options()
     option.headless = False
     office = "/home/w3e103/web_drivers/geckodriver"
-    personal = "C:\\Users\\rashe\\src\\geckodriver.exe"
-    service = Service(executable_path=personal)
+    # personal = "C:\\Users\\rashe\\src\\geckodriver.exe"
+    service = Service(executable_path=office)
     global driver
     driver = webdriver.Firefox(service=service, options=option)
     driver.fullscreen_window()
+
+
 
 # it takes destination place name and find and return the link of the destination
 def getDestinationLink(destination: str):
@@ -32,6 +34,9 @@ def getDestinationLink(destination: str):
         else:
             print('destination not found')
 
+
+
+
 #it takes a destination link. find first hotel of the destination and return a tuple containing link and hotel name. 
 def getHotelNameAndLink(url: str):
     try:
@@ -41,7 +46,12 @@ def getHotelNameAndLink(url: str):
         return None
     anchor = driver.find_element(by=By.CLASS_NAME, value='soom-name')
     hotelName = anchor.find_element(by=By.CSS_SELECTOR, value='span').text
-    return (anchor.get_attribute(name='href'), hotelName)
+    hotelId = anchor.get_attribute(name='href').split('.')[-2]
+    return (anchor.get_attribute(name='href'), hotelName,hotelId)
+
+
+
+
 
 #takes url of a specific hotel and return list of tuple containing label and button element
 def getButtonAndLabel(url:str):
@@ -57,6 +67,9 @@ def getButtonAndLabel(url:str):
                 return buttonWithLabel[1:]
         except:
             print('View all button not found')
+
+
+
 
 
  # take list of tuple of button and label and return a dictionary containing label and corresponding image list
@@ -107,8 +120,11 @@ def getImageWithLabel(buttonWithLabel: list) -> dict:
 
     return obj
 
+
+
+
 #takes hotel name and dictionary of image label and image. Save data to database
-def SaveToDatabase(hotelName: str, labelAndImage: dict):
+def SaveToDatabase(hotelName: str,hotelId:str, labelAndImage: dict):
     print(hotelName)
     print(labelAndImage)
     db.connect()
@@ -117,9 +133,9 @@ def SaveToDatabase(hotelName: str, labelAndImage: dict):
     except:
         print('already created')
 
-    hotelId = 0
+    hotelId = hotelId
     try:
-        hotelId = Hotel.create(name=hotelName)
+        hotelId = Hotel.create(hotel_id=hotelId,name=hotelName)
     except:
         hotelId = Hotel.get(name=hotelName)
 
@@ -137,6 +153,10 @@ def SaveToDatabase(hotelName: str, labelAndImage: dict):
                 Images.create(hotel=hotelId, image=image, label=labelid)
 
     db.close()
+
+
+
+
 # program start executing from here
 def main():
     startBrowser()
@@ -151,16 +171,18 @@ def main():
     if hotel:
         hotelName = hotel[1]
         hotelUrl = hotel[0]
+        hotelId = hotel[2]
     else:
         return
     image = getImageWithLabel(getButtonAndLabel(hotelUrl))
 
-    print(image)
+    # print(image)
+    # print(hotelName)
+    # print(hotelId)
+
     time.sleep(5)
     driver.close()
-    print(hotelName)
-    # res = Label.create(name="Bedroom")
-    # SaveToDatabase(hotelName=hotelName, labelAndImage=image)
+    SaveToDatabase(hotelName=hotelName,hotelId=hotelId, labelAndImage=image)
 
 
 main()

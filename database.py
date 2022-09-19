@@ -1,8 +1,10 @@
 from peewee import *
 
-db = MySQLDatabase('scraping', user='Rashedul', password='R@shedu1',
-                   host='localhost', port=3306)
+# db = MySQLDatabase('scraping', user='Rashedul', password='R@shedu1',
+#                    host='localhost', port=3306)
 
+db = MySQLDatabase('mysql', user='mysql', password='mysql',
+                         host='127.0.0.1', port=3306)
 
 class BaseModel(Model):
     class Meta:
@@ -10,7 +12,7 @@ class BaseModel(Model):
 
 
 class Hotel(BaseModel):
-    id = AutoField(primary_key=True)
+    hotel_id = CharField(primary_key=True, max_length=50)
     name = CharField(max_length=200)
 
 
