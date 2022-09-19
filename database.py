@@ -12,7 +12,8 @@ class BaseModel(Model):
 
 
 class Hotel(BaseModel):
-    hotel_id = CharField(primary_key=True, max_length=50)
+    # id = AutoField(primary_key=True)
+    hotelID = CharField(primary_key=True, max_length=50)
     name = CharField(max_length=200)
 
 
@@ -23,7 +24,7 @@ class Label(BaseModel):
 
 class Images(BaseModel):
     hotel = ForeignKeyField(Hotel)
-    image = CharField(max_length=200, unique=True)
+    image = CharField(max_length=200)
     label = ForeignKeyField(Label)
 
 

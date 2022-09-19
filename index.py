@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 import time
 import string
-
+from peewee import *
 # import from local module
 from database import db, Label, Images, Hotel
 
@@ -125,19 +125,17 @@ def getImageWithLabel(buttonWithLabel: list) -> dict:
 
 #takes hotel name and dictionary of image label and image. Save data to database
 def SaveToDatabase(hotelName: str,hotelId:str, labelAndImage: dict):
-    print(hotelName)
-    print(labelAndImage)
     db.connect()
     try:
         db.create_tables([Hotel, Label, Images])
     except:
         print('already created')
 
-    hotelId = hotelId
+    
     try:
-        hotelId = Hotel.create(hotel_id=hotelId,name=hotelName)
+        hotelId=Hotel.create(hotelID=hotelId,name=hotelName)
     except:
-        hotelId = Hotel.get(name=hotelName)
+        hotelId=Hotel.get(name=hotelName)
 
     for label in labelAndImage.keys():
         labelid = ''
@@ -150,7 +148,11 @@ def SaveToDatabase(hotelName: str,hotelId:str, labelAndImage: dict):
 
         for image in labelAndImage[label]:
             if image:
-                Images.create(hotel=hotelId, image=image, label=labelid)
+                try:
+                    Images.create(hotel=hotelId, image=image, label=labelid)
+                except:
+                    print('already exist')
+
 
     db.close()
 
@@ -175,10 +177,6 @@ def main():
     else:
         return
     image = getImageWithLabel(getButtonAndLabel(hotelUrl))
-
-    # print(image)
-    # print(hotelName)
-    # print(hotelId)
 
     time.sleep(5)
     driver.close()
